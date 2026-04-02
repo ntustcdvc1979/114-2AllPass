@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期中生存戰：測測你的零食人格</title>
+    <style>
+        :root { --primary: #6d4c41; --secondary: #f5f5f5; --accent: #8d6e63; }
+        body { font-family: 'PingFang TC', sans-serif; background-color: #fff9f0; margin: 0; padding: 20px 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 90%; max-width: 500px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; box-sizing: border-box; }
+        .hidden { display: none; }
+        
+        /* 雙 Logo 排版 */
+        .logo-container { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 15px; }
+        .club-logo { width: 70px; height: 70px; object-fit: contain; }
+        
+        .progress-container { width: 100%; height: 8px; background: #eee; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: 0.3s; }
+        
+        .option-btn { display: block; width: 100%; padding: 15px; margin: 10px 0; background: var(--secondary); border: 2px solid transparent; border-radius: 10px; text-align: left; cursor: pointer; transition: 0.2s; box-sizing: border-box; }
+        .option-btn:hover { border-color: var(--primary); background: #efebe9; }
+        
+        .result-img { width: 100%; border-radius: 15px; margin-bottom: 20px; }
+        
+        /* 修正欄位寬度一致 */
+        form { width: 100%; display: flex; flex-direction: column; align-items: center; }
+        input, select { 
+            width: 100%; 
+            max-width: 100%;
+            padding: 12px; 
+            margin: 8px 0; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 1rem; 
+            box-sizing: border-box; /* 關鍵：確保 padding 不會撐開寬度 */
+        }
+        
+        .btn { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1rem; cursor: pointer; width: 100%; margin-top: 10px; }
+        .social-section { margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+        .social-links { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
+        .social-links a img { width: 35px; height: 35px; }
+        .analysis-box { text-align: left; background: #fffdf9; border-left: 4px solid var(--primary); padding: 15px; margin: 20px 0; font-size: 0.95rem; }
+        .hashtag { color: #8d6e63; font-weight: bold; font-size: 0.8rem; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-container">
+            <img src="NewLogo.png" alt="Logo 1" class="club-logo">
+            <img src="small.png" alt="Logo 2" class="club-logo">
+        </div>
+
+        <div id="start-page">
+            <h1>🕵️ 期中生存戰<br>測測你的零食人格</h1>
+            <p>期中考來襲！測出你內心深處的考試狀態！</p>
+            <button class="btn" onclick="startQuiz()">開始測驗</button>
+        </div>
+
+        <div id="question-page" class="hidden">
+            <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
+            <div id="progress-text" style="font-size: 0.8rem; color: #888;">第 1 / 10 題</div>
+            <h2 id="question-text" style="margin: 20px 0;">問題內容</h2>
+            <div id="options"></div>
+        </div>
+
+        <div id="result-page" class="hidden">
+            <h1 id="result-title">你是...</h1>
+            <img src="" id="result-image" class="result-img">
+            
+            <div class="analysis-box">
+                <strong>【性格分析】</strong><br><span id="res-ana"></span><br><br>
+                <strong>【期中必勝咒語】</strong><br><span id="res-spell" style="color: #d35400; font-weight: bold;"></span>
+                <div class="hashtag" id="res-tag"></div>
+            </div>
+            
+            <div style="background: #fdf2f2; padding: 20px; border-radius: 15px;">
+                <h3>🍬 領取專屬 All Pass 糖</h3>
+                <form id="collect-form">
+                    <input type="text" id="form-name" placeholder="姓名" required>
+                    <input type="text" id="form-dept" placeholder="系級 (例如: 資管大三)" required>
+                    <select id="form-time" required>
+                        <option value="" disabled selected>選擇領取時間</option>
+                        <option value="4/7(二) 19:00 管院一樓">4/7(二) 19:00 管院一樓</option>
+                        <option value="4/8(三) 19:00 管院一樓">4/8(三) 19:00 管院一樓</option>
+                        <option value="4/9(四) 19:00 管院一樓">4/9(四) 19:00 管院一樓</option>
+                        <option value="以上都不行，另外約時間領取">以上都不行，另外約時間領取</option>
+                    </select>
+                    <button type="submit" id="submit-btn" class="btn">提交預約領取 All Pass 糖</button>
+                </form>
+            </div>
+
+            <div class="social-section">
+                <p style="font-size: 0.9rem; color: #666;">追蹤台科大崇德志工社，獲取更多活動資訊：</p>
+                <div class="social-links">
+                    <a href="https://www.instagram.com/ntustcdvc?igsh=M2pmNTJiMGpvbnRl" target="_blank">
+                        <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram">
+                    </a>
+                    <a href="https://www.facebook.com/cdvcntust/" target="_blank">
+                        <img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook">
+                    </a>
+                    <a href="https://line.me/ti/g2/zovx0m_zdGqe-VDGrtJxYPafrxfIt5JM9Z3n2g?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank">
+                        <img src="https://cdn-icons-png.flaticon.com/512/2504/2504922.png" alt="Line">
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="thanks-page" class="hidden">
+            <h1>預約成功！✨</h1>
+            <p>已收到你的預約，祝你期中考順利！</p>
+            <button class="btn" onclick="location.reload()">再測一次</button>
+        </div>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzDxRQ2AfB8faC_IntD9tzorKOinri2SeuoMGznyARd-vjlOH2XkqVQJkPsqH3RO-8kww/exec';
+        const questions = [
+            { q: "距離期中考只剩一週，你通常會：", a: "執行計畫，進度明確", b: "有計畫但常分心", c: "問同學讀到哪了", d: "覺得還早先睡飽" },
+            { q: "你理想的讀書環境是：", a: "安靜圖書館個位", b: "有背景音樂咖啡廳", c: "跟朋友互相打氣", d: "舒服的床上或沙發" },
+            { q: "章節看不懂時你會：", a: "鑽研到底直到弄懂", b: "先跳過等心情好再說", c: "傳群組問大神", d: "覺得這題不會考" },
+            { q: "關於期中考筆記：", a: "邏輯嚴謹標示分明", b: "隨手記在講義邊", c: "印同學整理好的", d: "靠腦袋和直覺" },
+            { q: "考前一晚的狀態：", a: "複習完畢準時睡覺", b: "想早睡但陷入奮戰", c: "在群組互相取暖", d: "交給命運安穩入睡" },
+            { q: "走進考場前的心情：", a: "冷靜專注像戰鬥", b: "緊張想快點結束", c: "跟周圍確認重點", d: "內心平靜想吃什麼" },
+            { q: "看到沒看過的題目：", a: "運用邏輯推導答案", b: "發揮想像力亂掰", c: "看同學反應壓力大", d: "選個順眼的選項或交卷" },
+            { q: "老師宣布加分題：", a: "絕對把握每一分", b: "看心情決定寫不寫", c: "看大家寫不寫再說", d: "原本的分數夠用就好" },
+            { q: "考完走出教室後：", a: "對答案確認掌握度", b: "深呼吸重獲新生", c: "跟朋友討論考題", d: "回家補眠" },
+            { q: "你如何定義考試：", a: "檢驗自律的試金石", b: "充滿變數的冒險", c: "大家共度磨難", d: "人生的小插曲" }
+        ];
+
+        const results = {
+            A: { title: "苦甜巧克力型", ana: "你是高品質的自律者。雖然過程辛苦，但你追求的是最後完美的成果與掌控感。", spell: "「我的計畫，絕無漏洞。」", tag: "#學霸模式 #自律 #我AllPass", img: "choco.png" },
+            B: { title: "透明果凍型", ana: "你非常有彈性！面對壓力能屈能伸，有時候軟爛有時候強韌，總能用最靈活的方式度過難關。", spell: "「隨遇而安，見招拆招。」", tag: "#佛系戰士 #軟Q #彈性AllPass", img: "jelly.png" },
+            C: { title: "夾心餅乾型", ana: "你是團隊中的靈魂。外表看似堅強，其實很需要同儕的支撐，在團體中學習效率最高。", spell: "「我們這群人，一個都不能少！」", tag: "#革命情感 #需要抱抱 #一起Pass", img: "cookie.png" },
+            D: { title: "牛奶軟糖型", ana: "你是佛系代表。性格溫和且不易焦慮，覺得考好考壞都是人生的一環。", spell: "「考完去吃好吃的比較重要。」", tag: "#佛系人生 #盡力就好 #牛奶軟糖", img: "milk.png" }
+        };
+
+        let currentQuestion = 0;
+        let scores = { a: 0, b: 0, c: 0, d: 0 };
+        let userAnswers = ""; // 用來紀錄每一題選什麼 (如: ABCC...)
+        let finalResultTitle = "";
+
+        function startQuiz() {
+            document.getElementById('start-page').classList.add('hidden');
+            document.getElementById('question-page').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('pb').style.width = progress + '%';
+            document.getElementById('progress-text').innerText = `第 ${currentQuestion + 1} / 10 題`;
+            const q = questions[currentQuestion];
+            document.getElementById('question-text').innerText = q.q;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            let opts = [{k:'a', v:q.a}, {k:'b', v:q.b}, {k:'c', v:q.c}, {k:'d', v:q.d}];
+            opts.sort(() => Math.random() - 0.5);
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.v;
+                btn.onclick = () => selectOption(opt.k);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function selectOption(key) {
+            scores[key]++;
+            userAnswers += key.toUpperCase(); // 紀錄大寫字母
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('question-page').classList.add('hidden');
+            document.getElementById('result-page').classList.remove('hidden');
+            const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b).toUpperCase();
+            const res = results[winner];
+            finalResultTitle = res.title;
+            document.getElementById('result-title').innerText = `你是【${res.title}】`;
+            document.getElementById('result-image').src = res.img;
+            document.getElementById('res-ana').innerText = res.ana;
+            document.getElementById('res-spell').innerText = res.spell;
+            document.getElementById('res-tag').innerText = res.tag;
+            sendToGAS("未預約");
+        }
+
+        function sendToGAS(status) {
+            const payload = {
+                name: document.getElementById('form-name').value || "",
+                dept: document.getElementById('form-dept').value || "",
+                time: document.getElementById('form-time').value || "",
+                result: finalResultTitle,
+                rawAnswers: userAnswers, // 傳送每題紀錄
+                scoreA: scores.a, scoreB: scores.b, scoreC: scores.c, scoreD: scores.d,
+                status: status
+            };
+            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        }
+
+        document.getElementById('collect-form').onsubmit = function(e) {
+            e.preventDefault();
+            document.getElementById('submit-btn').disabled = true;
+            sendToGAS("已送出");
+            setTimeout(() => {
+                document.getElementById('result-page').classList.add('hidden');
+                document.getElementById('thanks-page').classList.remove('hidden');
+            }, 800);
+        };
+    </script>
+</body>
+</html>
